@@ -9,11 +9,11 @@ import os
 
 class GCSService:
     def __init__(self):
-        """Initialize GCS client with credentials"""
-        # Initialize client with service account
-        self.client = storage.Client.from_service_account_json(
-            settings.GCS_CREDENTIALS_PATH
-        )
+        if os.getenv("GCS_CREDENTIALS_PATH") and os.path.exists(settings.GCS_CREDENTIALS_PATH):
+            self.client = storage.Client.from_service_account_json(settings.GCS_CREDENTIALS_PATH)
+        else:
+            # Uses Application Default Credentials (Cloud Run service account)
+            self.client = storage.Client()
         self.bucket = self.client.bucket(settings.GCS_BUCKET_NAME)
     
     async def upload_file(self, file: UploadFile) -> dict:
