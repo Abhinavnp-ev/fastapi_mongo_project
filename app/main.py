@@ -76,3 +76,8 @@ async def upload_file_to_gcs(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
+@app.get("/")
+async def root():
+    return {"message": "FastAPI app is running on Cloud Run"}
