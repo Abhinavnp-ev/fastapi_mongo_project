@@ -93,3 +93,21 @@ gcloud run deploy myfastapiapp
 5. After deployment, Cloud Run will provide a public URL to access your FastAPI app.
 
 ---
+Large File Upload Support
+This project supports uploading large files efficiently to Google Cloud Storage (GCS) via two methods:
+
+Chunked Upload (Server Upload):
+The API reads the uploaded file in 1MB chunks and streams them to GCS, avoiding loading entire files into memory.
+
+Signed URL Upload (Client Upload):
+For files larger than 32MB (Cloud Run request size limit), the API generates a temporary signed URL.
+Clients can upload files directly to GCS via this URL, bypassing the API backend.
+
+How to use Signed URL Upload
+Request a signed upload URL from:
+
+GET /upload-url/?filename=yourfile.ext
+
+Receive JSON with upload_url and unique_filename.
+
+Upload your file directly to Google Cloud Storage using this URL via tools like curl, Postman, or frontend code.

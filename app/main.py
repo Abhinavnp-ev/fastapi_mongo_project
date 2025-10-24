@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException,UploadFile, File,status
+from fastapi import FastAPI, HTTPException,UploadFile, File,status,Query
 from . import crud
-from .schemas import ItemCreate, ItemDB,ItemUpdate,APIResponse
+from .schemas import ItemCreate,ItemUpdate,APIResponse
 from bson import ObjectId
 from .gcs_service import gcs_service
 from fastapi.middleware.cors import CORSMiddleware
 from .database import db
-from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
-load_dotenv()
+import uuid
+import os
+
+
 app = FastAPI(title="FastAPI MongoDB CRUD", version="1.0")
 
 app.add_middleware(
@@ -100,7 +101,21 @@ async def upload_file_to_gcs(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Upload failed: {str(e)}")
 
-
+@app.get("/upload-url/", status_code=status.HTTP_200_OK)
+async def generate_upload_signed_url_endpoint(filename: str = Query(...)):
+    try:
+        unique_filename = f"{uuid.uuid4()}{os.path.splitext(filename)[1]}"
+        signed_url = gcs_service.generate_upload_signed_url(unique_filename)
+        file_doc = {
+            "upload_url": signed_url,
+            "unique_filename": unique_filename,
+        }
+        return {"status": "success", "message": "Signed upload URL generated", "data": file_doc}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate signed upload URL: {str(e)}"
+        )
 @app.get("/")
 async def root():
     return {"message": "FastAPI app is running on Cloud Run"}
