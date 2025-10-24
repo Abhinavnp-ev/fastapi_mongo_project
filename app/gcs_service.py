@@ -70,46 +70,5 @@ class GCSService:
                 status_code=500,
                 detail=f"Unexpected error during file upload: {str(e)}"
             )
-    
-    async def delete_file(self, filename: str) -> bool:
-        """
-        Delete file from Google Cloud Storage
-        
-        Args:
-            filename: Name of the file to delete
-            
-        Returns:
-            bool: True if successful
-        """
-        try:
-            blob = self.bucket.blob(filename)
-            blob.delete()
-            return True
-        except GoogleCloudError as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to delete file from GCS: {str(e)}"
-            )
-    
-    def get_signed_url(self, filename: str, expiration_minutes: int = 15) -> str:
-        """
-        Generate a signed URL for temporary access (optional feature)
-        
-        Args:
-            filename: Name of the file
-            expiration_minutes: URL expiration time in minutes
-            
-        Returns:
-            str: Signed URL
-        """
-        blob = self.bucket.blob(filename)
-        url = blob.generate_signed_url(
-            version="v4",
-            expiration=datetime.timedelta(minutes=expiration_minutes),
-            method="GET"
-        )
-        return url
-
-
 # Create singleton instance
 gcs_service = GCSService()
