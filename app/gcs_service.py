@@ -9,7 +9,7 @@ import os
 
 class GCSService:
     def __init__(self):
-        if os.getenv("GCS_CREDENTIALS_PATH") and os.path.exists(settings.GCS_CREDENTIALS_PATH):
+        if settings.GCS_CREDENTIALS_PATH and os.path.exists(settings.GCS_CREDENTIALS_PATH):
             self.client = storage.Client.from_service_account_json(settings.GCS_CREDENTIALS_PATH)
         else:
             # Uses Application Default Credentials (Cloud Run service account)

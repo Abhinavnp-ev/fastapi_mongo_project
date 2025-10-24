@@ -56,7 +56,7 @@ Access Swagger UI at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ## Docker Container Setup
 
-Build the Docker image:
+Build the Docker image(make sure docker desktop is running):
 
 docker build -t myfastapiapp .
 
